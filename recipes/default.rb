@@ -12,9 +12,9 @@ when "debian", "ubuntu"
   apt_repository "10gen" do
     action :add
     init_process = node[:platform] == "debian" || node[:lsb][:codename] <= "karmic" ? "debian-sysvinit" : "ubuntu-upstart"
-    uri "deb http://downloads-distro.mongodb.org/repo/#{init_process} "
-    distribution node['lsb']['codename']
-    components %w(dist 10gen)
+    uri "http://downloads-distro.mongodb.org/repo/#{init_process} "
+    distribution "dist"
+    components %w(10gen)
     keyserver "keyserver.ubuntu.com"
     key "7F0CEB10"
   end
