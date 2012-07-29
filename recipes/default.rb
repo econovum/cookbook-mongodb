@@ -4,8 +4,13 @@ case node[:platform]
 when "redhat", "centos", "fedora"
   template "/etc/yum.repos.d/10gen.repo"
 
-  execute "yum -y update"
-  execute "yum -y install mongo-10gen mongo-10gen-server"
+  package "mongo-10gen" do
+    action :install
+  end
+
+  package "mongo-10gen-server" do
+    action :install
+  end
 when "debian", "ubuntu"
   include_recipe "apt"
 
