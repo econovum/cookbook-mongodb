@@ -11,6 +11,10 @@ when "redhat", "centos", "fedora"
   package "mongo-10gen-server" do
     action :install
   end
+
+  service "mongod" do
+    action [:enable, :start]
+  end
 when "debian", "ubuntu"
   include_recipe "apt"
 
@@ -26,6 +30,10 @@ when "debian", "ubuntu"
 
   package "mongodb-10gen" do
     action :install
+  end
+
+  service "mongod" do
+    action [:enable, :start]
   end
 else
   raise "Platform #{node[:platform]} is not supported yet!"
