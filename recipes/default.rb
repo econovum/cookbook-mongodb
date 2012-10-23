@@ -1,4 +1,7 @@
 # encoding: utf-8
+execute 'mongo --eval "rs.initiate()"' do
+  action :nothing
+end
 
 case node['platform']
 when "redhat", "centos", "fedora"
@@ -14,6 +17,7 @@ when "redhat", "centos", "fedora"
 
   service "mongod" do
     action [:enable, :start]
+    notifies :run, 'execute[mongo --eval "rs.initiate()"]', :delayed
   end
 when "debian", "ubuntu"
   include_recipe "apt"
@@ -45,3 +49,5 @@ template "/etc/mongod.conf" do
   mode 0644
   notifies :restart, "service[mongod]", :delayed
 end
+
+
