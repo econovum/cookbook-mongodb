@@ -1,4 +1,8 @@
 # encoding: utf-8
+package 'cronie' do
+  action :install
+end
+
 execute 'mongo --eval "rs.initiate()"' do
   action :nothing
 end
@@ -50,4 +54,14 @@ template "/etc/mongod.conf" do
   notifies :restart, "service[mongod]", :delayed
 end
 
+service "crond" do
+  action :nothing
+end
+
+template "/etc/cron.daily/mongodb-backup.cron" do
+  owner "root"
+  group "root"
+  mode 0755
+  notifies :restart, "service[crond]"
+end
 

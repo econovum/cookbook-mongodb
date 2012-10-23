@@ -1,0 +1,14 @@
+#!/bin/sh
+
+DB="igo_mongo_production"
+BACKUP_DIR="/opt/backups"
+MONGODUMP=`which mongodump`
+TIMESTAMP=`date +%Y-%m-%d-%R:%S`
+
+if [ ! -d $BACKUP_DIR ]
+then
+  mkdir -p $BACKUP_DIR
+fi
+
+$MONGODUMP --db $DB --out $BACKUP_DIR/mongodb-backup-$TIMESTAMP
+
