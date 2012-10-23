@@ -38,3 +38,10 @@ when "debian", "ubuntu"
 else
   raise "Platform #{node['platform']} is not supported yet!"
 end
+
+template "/etc/mongod.conf" do
+  owner "root"
+  group "root"
+  mode 0644
+  notifies :restart, "service[mongod]", :delayed
+end
