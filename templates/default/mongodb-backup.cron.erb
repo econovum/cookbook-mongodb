@@ -1,14 +1,41 @@
 #!/bin/sh
 
+#configure parameters
 DB="igo_mongo_production"
 BACKUP_DIR="/opt/backups"
+REMOTE="remote-user@remote-ip"
+REMOTE_PORT=22
+MIRROR="false"
+
 MONGODUMP=`which mongodump`
 TIMESTAMP=`date +%Y-%m-%d-%R:%S`
+HOSTNAME=`hostname`
+
+if [ ! -f $MONGODUMP ]
+then
+  echo $MONGODUMP "not exists, exiting"
+  exit 1
+fi
 
 if [ ! -d $BACKUP_DIR ]
 then
   mkdir -p $BACKUP_DIR
 fi
 
+#Do backup
 $MONGODUMP --db $DB --out $BACKUP_DIR/mongodb-backup-$TIMESTAMP
 
+#zip up
+tar -cf $BACKUP_DIR/$DB-$TIMESTAMP.tar $BACKUP_DIR/mongodb-backup-$TIMESTAMP
+gzip $BACKUP_DIR/$DB-$TIMESTAMP.tar
+rm -rf $BACKUP_DIR/mongodb-backup-$TIMESTAMP
+
+#remove old backups
+find $BACKUP_DIR -mtime 30 -print -delete >> $BACKUP_DIR/deleted.log
+
+#mirror backups
+if [ "$MIRROR" == "true" ]
+then
+  ssh -p $REMOTE_PORT $REMOTE "mkdir -p /opt/backups/$HOSTNAME"
+  rsync -A --rsh="ssh -p $REMOTE_PORT" /opt/backups $REMOTE:/opt/backups/$HOSTNAME
+fi
