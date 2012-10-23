@@ -1,11 +1,11 @@
 #!/bin/sh
 
 #configure parameters
-DB="igo_mongo_production"
-BACKUP_DIR="/opt/backups"
-REMOTE="remote-user@remote-ip"
-REMOTE_PORT=22
-MIRROR="false"
+DB="<%= node['mongodb']['db_name'] %>"
+BACKUP_DIR="<%= node['mongodb']['backup_dir'] %>"
+REMOTE="<%= node['mongodb']['remote'] %>"
+REMOTE_PORT=<%= node['mongodb']['remote_port'] %>
+MIRROR="<%= node['mongodb']['do_mirror'] %>"
 
 MONGODUMP=`which mongodump`
 TIMESTAMP=`date +%Y-%m-%d-%R:%S`
