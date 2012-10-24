@@ -81,6 +81,6 @@ pidfilepath = /var/run/mongodb/mongod.pid
 # or
 #master = true
 #source = slave.example.com
-replSet = set0
+replSet = <%= node['mongodb']['set_name'] %>
 rest = true
 

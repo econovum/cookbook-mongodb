@@ -8,7 +8,7 @@ execute 'mongo --eval "rs.initiate()"' do
 end
 
 case node['platform']
-when "redhat", "centos", "fedora"
+when "redhat", "centos", "fedora", "amazon", "scientific"
   template "/etc/yum.repos.d/10gen.repo"
 
   package "mongo-10gen" do

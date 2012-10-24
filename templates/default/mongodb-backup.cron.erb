@@ -6,6 +6,7 @@ BACKUP_DIR="<%= node['mongodb']['backup_dir'] %>"
 REMOTE="<%= node['mongodb']['remote'] %>"
 REMOTE_PORT=<%= node['mongodb']['remote_port'] %>
 MIRROR="<%= node['mongodb']['do_mirror'] %>"
+LOCAL="<%= node['mongodb']['local'] %>"
 
 MONGODUMP=`which mongodump`
 TIMESTAMP=`date +%Y-%m-%d-%R:%S`
@@ -36,6 +37,15 @@ find $BACKUP_DIR -mtime 30 -print -delete >> $BACKUP_DIR/deleted.log
 #mirror backups
 if [ "$MIRROR" == "true" ]
 then
-  ssh -p $REMOTE_PORT $REMOTE "mkdir -p /opt/backups/$HOSTNAME"
-  rsync -A --rsh="ssh -p $REMOTE_PORT" /opt/backups $REMOTE:/opt/backups/$HOSTNAME
+  if [ -n "$REMOTE" ]
+  then
+    ssh -p $REMOTE_PORT $REMOTE "mkdir -p /opt/backups/$HOSTNAME"
+    rsync -A --rsh="ssh -p $REMOTE_PORT" /opt/backups $REMOTE:/opt/backups/$HOSTNAME
+  fi
+
+  if [ -n "$LOCAL" ]
+  then
+    mkdir -p $LOCAL/$HOSTNAME
+    rsync -A /opt/backups $LOCAL/$HOSTNAME
+  fi
 fi
