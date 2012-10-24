@@ -7,6 +7,7 @@ REMOTE="<%= node['mongodb']['remote'] %>"
 REMOTE_PORT=<%= node['mongodb']['remote_port'] %>
 MIRROR="<%= node['mongodb']['do_mirror'] %>"
 LOCAL="<%= node['mongodb']['local'] %>"
+REMOTE_DIR="<%= node['mongodb']['remote_dir'] %>"
 
 MONGODUMP=`which mongodump`
 TIMESTAMP=`date +%Y-%m-%d-%R:%S`
@@ -39,13 +40,13 @@ if [ "$MIRROR" == "true" ]
 then
   if [ -n "$REMOTE" ]
   then
-    ssh -p $REMOTE_PORT $REMOTE "mkdir -p /opt/backups/$HOSTNAME"
-    rsync -A --rsh="ssh -p $REMOTE_PORT" /opt/backups $REMOTE:/opt/backups/$HOSTNAME
+    ssh -p $REMOTE_PORT $REMOTE "mkdir -p $REMOTE_DIR/$HOSTNAME"
+    rsync -a --delete --rsh="ssh -p $REMOTE_PORT" $BACKUP_DIR/ $REMOTE:$REMOTE_DIR/$HOSTNAME
   fi
 
   if [ -n "$LOCAL" ]
   then
     mkdir -p $LOCAL/$HOSTNAME
-    rsync -A /opt/backups $LOCAL/$HOSTNAME
+    rsync -a --delete $BACKUP_DIR/ $LOCAL/$HOSTNAME
   fi
 fi
