@@ -3,10 +3,6 @@ package 'cronie' do
   action :install
 end
 
-execute 'mongo --eval "rs.initiate()"' do
-  action :nothing
-end
-
 case node['platform']
 when "redhat", "centos", "fedora", "amazon", "scientific"
   template "/etc/yum.repos.d/10gen.repo"
@@ -19,10 +15,6 @@ when "redhat", "centos", "fedora", "amazon", "scientific"
     action :install
   end
 
-  service "mongod" do
-    action [:enable, :start]
-    notifies :run, 'execute[mongo --eval "rs.initiate()"]', :delayed
-  end
 when "debian", "ubuntu"
   include_recipe "apt"
 
@@ -40,9 +32,6 @@ when "debian", "ubuntu"
     action :install
   end
 
-  service "mongod" do
-    action [:enable, :start]
-  end
 else
   raise "Platform #{node['platform']} is not supported yet!"
 end
@@ -51,7 +40,16 @@ template "/etc/mongod.conf" do
   owner "root"
   group "root"
   mode 0644
-  notifies :restart, "service[mongod]", :delayed
+#  notifies :restart, "service[mongod]", :delayed
+end
+
+service "mongod" do
+  action [:enable, :start]
+#  notifies :run, 'execute[mongo --eval "rs.initiate()"]', :immediate
+end
+
+execute 'mongo --eval "rs.initiate()"' do
+  :nothing
 end
 
 service "crond" do
