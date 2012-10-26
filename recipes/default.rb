@@ -1,18 +1,21 @@
 # encoding: utf-8
-package 'cronie' do
-  action :install
+
+#define resource that initiates our replica set
+execute 'mongo-initiate-replicaset' do
+  #run this command
+  command "mongo --eval \"rs.initiate()\""
+  #do not execute upon definition, only when notified
+  action :nothing
 end
 
 case node['platform']
 when "redhat", "centos", "fedora", "amazon", "scientific"
   template "/etc/yum.repos.d/10gen.repo"
 
-  package "mongo-10gen" do
-    action :install
-  end
-
-  package "mongo-10gen-server" do
-    action :install
+  %w{cronie mongo-10gen mongo-10gen-server}.each do |pkg|
+    package pkg do
+      action :install
+    end
   end
 
 when "debian", "ubuntu"
@@ -36,20 +39,16 @@ else
   raise "Platform #{node['platform']} is not supported yet!"
 end
 
+service "mongod" do
+  action [:enable, :start]
+end
+
 template "/etc/mongod.conf" do
   owner "root"
   group "root"
   mode 0644
-#  notifies :restart, "service[mongod]", :delayed
-end
-
-service "mongod" do
-  action [:enable, :start]
-#  notifies :run, 'execute[mongo --eval "rs.initiate()"]', :immediate
-end
-
-execute 'mongo --eval "rs.initiate()"' do
-  :nothing
+  notifies :restart, "service[mongod]"
+  notifies :run, resources(:execute => "mongo-initiate-replicaset")
 end
 
 service "crond" do
