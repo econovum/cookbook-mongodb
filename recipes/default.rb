@@ -18,6 +18,25 @@ when "redhat", "centos", "fedora", "amazon", "scientific"
     end
   end
 
+  template "/etc/mongod.conf" do
+    owner "root"
+    group "root"
+    mode 0644
+    notifies :restart, "service[mongod]"
+    notifies :run, resources(:execute => "mongo-initiate-replicaset")
+  end
+
+  service "crond" do
+    action :nothing
+  end
+
+  template "/etc/cron.daily/mongodb-backup.cron" do
+    owner "root"
+    group "root"
+    mode 0755
+    notifies :restart, "service[crond]"
+  end
+
 when "debian", "ubuntu"
   include_recipe "apt"
 
@@ -42,23 +61,3 @@ end
 service "mongod" do
   action [:enable, :start]
 end
-
-template "/etc/mongod.conf" do
-  owner "root"
-  group "root"
-  mode 0644
-  notifies :restart, "service[mongod]"
-  notifies :run, resources(:execute => "mongo-initiate-replicaset")
-end
-
-service "crond" do
-  action :nothing
-end
-
-template "/etc/cron.daily/mongodb-backup.cron" do
-  owner "root"
-  group "root"
-  mode 0755
-  notifies :restart, "service[crond]"
-end
-
