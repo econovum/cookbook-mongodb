@@ -37,6 +37,11 @@ when "redhat", "centos", "fedora", "amazon", "scientific"
     notifies :restart, "service[crond]"
   end
 
+  service "mongod" do
+    action [:enable, :start]
+  end
+
+
 when "debian", "ubuntu"
   include_recipe "apt"
 
@@ -54,10 +59,10 @@ when "debian", "ubuntu"
     action :install
   end
 
+  service "mongodb" do
+    action [:enable, :start]
+  end
 else
   raise "Platform #{node['platform']} is not supported yet!"
 end
 
-service "mongod" do
-  action [:enable, :start]
-end
