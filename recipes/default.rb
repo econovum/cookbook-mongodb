@@ -3,7 +3,7 @@
 #define resource that initiates our replica set
 execute 'mongo-initiate-replicaset' do
   #run this command
-  command "mongo --eval \"rs.initiate()\""
+  command "mongo 127.0.0.1:41017 --eval \"rs.initiate()\""
   #do not execute upon definition, only when notified
   action :nothing
 end
