@@ -18,6 +18,13 @@ when "redhat", "centos", "fedora", "amazon", "scientific"
     end
   end
 
+  template "/var/lib/mongo/keyfile" do
+    owner "mongod"
+    group "mongod"
+    mode 0400
+    notifies :restart, "service[mongod]"
+  end
+
   template "/etc/mongod.conf" do
     owner "root"
     group "root"
