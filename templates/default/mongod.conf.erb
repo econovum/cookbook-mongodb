@@ -9,7 +9,7 @@ logappend=true
 fork = true
 
 #port = 27017
-port = 41017
+port = <%= node['mongodb']['port'] %>
 
 dbpath=/var/lib/mongo
 
