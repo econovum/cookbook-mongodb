@@ -25,7 +25,7 @@ then
 fi
 
 #Do backup
-$MONGODUMP --db $DB --out $BACKUP_DIR/mongodb-backup-$TIMESTAMP
+$MONGODUMP --port <%= node['mongodb']['port'] %> --db $DB --out $BACKUP_DIR/mongodb-backup-$TIMESTAMP
 
 #zip up
 tar -cf $BACKUP_DIR/$DB-$TIMESTAMP.tar $BACKUP_DIR/mongodb-backup-$TIMESTAMP
